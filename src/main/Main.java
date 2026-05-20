@@ -11,8 +11,8 @@ public class Main {
 
         SwingUtilities.invokeLater(() -> {
 
-            // new LoginFrame();
-            new AdminDashboard();
+            new LoginFrame();
+            //new AdminDashboard();
         });
     }
 }
