@@ -28,6 +28,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
     JButton viewBooksButton;
     JButton issueBookButton;
     JButton logoutButton;
+    JButton returnBookButton;
 
     // Currently active nav button
     private JButton activeButton = null;
@@ -35,12 +36,12 @@ public class AdminDashboard extends JFrame implements ActionListener {
     // ─────────────────────────────────────────
     // COLORS
     // ─────────────────────────────────────────
-    Color primaryColor      = new Color(24,  95, 220);
-    Color hoverColor        = new Color(16,  70, 170);
-    Color activeColor       = new Color(10,  50, 130);
-    Color backgroundColor   = new Color(245, 247, 252);
-    Color sidebarTextColor  = Color.WHITE;
-    Color sidebarSubColor   = new Color(180, 200, 245);
+    Color primaryColor = new Color(24, 95, 220);
+    Color hoverColor = new Color(16, 70, 170);
+    Color activeColor = new Color(10, 50, 130);
+    Color backgroundColor = new Color(245, 247, 252);
+    Color sidebarTextColor = Color.WHITE;
+    Color sidebarSubColor = new Color(180, 200, 245);
 
     // Sidebar width (fixed)
     private static final int SIDEBAR_W = 230;
@@ -56,8 +57,8 @@ public class AdminDashboard extends JFrame implements ActionListener {
 
         // Responsive: 88% of screen, min 960×580
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        int w = Math.max((int)(screen.width  * 0.88), 960);
-        int h = Math.max((int)(screen.height * 0.90), 580);
+        int w = Math.max((int) (screen.width * 0.88), 960);
+        int h = Math.max((int) (screen.height * 0.90), 580);
         setSize(w, h);
         setMinimumSize(new Dimension(860, 540));
         setLocationRelativeTo(null);
@@ -71,8 +72,8 @@ public class AdminDashboard extends JFrame implements ActionListener {
         // ── Right side: top bar + content ────
         JPanel rightSide = new JPanel(new BorderLayout());
         rightSide.setBackground(backgroundColor);
-        rightSide.add(buildTopPanel(),     BorderLayout.NORTH);
-        rightSide.add(buildContentArea(),  BorderLayout.CENTER);
+        rightSide.add(buildTopPanel(), BorderLayout.NORTH);
+        rightSide.add(buildContentArea(), BorderLayout.CENTER);
         add(rightSide, BorderLayout.CENTER);
 
         // Show default welcome page
@@ -118,15 +119,17 @@ public class AdminDashboard extends JFrame implements ActionListener {
         sidebarPanel.add(Box.createVerticalStrut(32));
 
         // ── Nav buttons ──────────────────────
-        addBookButton   = createMenuButton("📘  Add Book");
+        addBookButton = createMenuButton("📘  Add Book");
         viewBooksButton = createMenuButton("📚  View Books");
         issueBookButton = createMenuButton("📖  Issue Book");
+        returnBookButton = createMenuButton("📕  Return Book");
 
         sidebarPanel.add(addBookButton);
         sidebarPanel.add(Box.createVerticalStrut(4));
         sidebarPanel.add(viewBooksButton);
         sidebarPanel.add(Box.createVerticalStrut(4));
         sidebarPanel.add(issueBookButton);
+        sidebarPanel.add(returnBookButton);
 
         // Logout pinned to bottom
         sidebarPanel.add(Box.createVerticalGlue());
@@ -155,7 +158,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                    RenderingHints.VALUE_ANTIALIAS_ON);
+                        RenderingHints.VALUE_ANTIALIAS_ON);
 
                 if (getClientProperty("active") == Boolean.TRUE) {
                     g2.setColor(activeColor);
@@ -185,8 +188,15 @@ public class AdminDashboard extends JFrame implements ActionListener {
 
         // Repaint on hover
         button.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) { button.repaint(); }
-            @Override public void mouseExited (MouseEvent e) { button.repaint(); }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.repaint();
+            }
         });
 
         button.addActionListener(this);
@@ -215,9 +225,8 @@ public class AdminDashboard extends JFrame implements ActionListener {
         topPanel.setBackground(Color.WHITE);
         topPanel.setPreferredSize(new Dimension(0, 90));
         topPanel.setBorder(new CompoundBorder(
-            new MatteBorder(0, 0, 1, 0, new Color(218, 218, 225)),
-            new EmptyBorder(0, 30, 0, 30)
-        ));
+                new MatteBorder(0, 0, 1, 0, new Color(218, 218, 225)),
+                new EmptyBorder(0, 30, 0, 30)));
 
         // Text block
         JPanel textBlock = new JPanel();
@@ -259,11 +268,28 @@ public class AdminDashboard extends JFrame implements ActionListener {
     // OPEN PANEL HELPER
     // =========================================
     private void openPanel(JPanel panel) {
-        contentPanel.removeAll();
-        contentPanel.add(panel, BorderLayout.CENTER);
-        contentPanel.revalidate();
-        contentPanel.repaint();
-    }
+
+    JScrollPane scrollPane =
+            new JScrollPane(panel);
+
+    scrollPane.setBorder(null);
+
+    scrollPane.getVerticalScrollBar()
+            .setUnitIncrement(16);
+
+    scrollPane.getViewport()
+            .setBackground(backgroundColor);
+
+    contentPanel.removeAll();
+
+    contentPanel.add(
+            scrollPane,
+            BorderLayout.CENTER);
+
+    contentPanel.revalidate();
+
+    contentPanel.repaint();
+}
 
     // =========================================
     // DEFAULT WELCOME PAGE
@@ -279,9 +305,8 @@ public class AdminDashboard extends JFrame implements ActionListener {
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBackground(Color.WHITE);
         card.setBorder(new CompoundBorder(
-            new LineBorder(new Color(218, 218, 225), 1, true),
-            new EmptyBorder(40, 60, 40, 60)
-        ));
+                new LineBorder(new Color(218, 218, 225), 1, true),
+                new EmptyBorder(40, 60, 40, 60)));
 
         JLabel icon = new JLabel("📚", SwingConstants.CENTER);
         icon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 48));
@@ -301,7 +326,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
         JPanel chips = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 0));
         chips.setBackground(Color.WHITE);
         chips.setAlignmentX(Component.CENTER_ALIGNMENT);
-        chips.add(chip("📘 Add Book",   new Color(230, 241, 251), new Color(24, 95, 220)));
+        chips.add(chip("📘 Add Book", new Color(230, 241, 251), new Color(24, 95, 220)));
         chips.add(chip("📚 View Books", new Color(234, 243, 222), new Color(59, 109, 17)));
         chips.add(chip("📖 Issue Book", new Color(252, 235, 235), new Color(163, 45, 45)));
 
@@ -324,9 +349,8 @@ public class AdminDashboard extends JFrame implements ActionListener {
         lbl.setBackground(bg);
         lbl.setOpaque(true);
         lbl.setBorder(new CompoundBorder(
-            new LineBorder(fg.brighter(), 1, true),
-            new EmptyBorder(6, 14, 6, 14)
-        ));
+                new LineBorder(fg.brighter(), 1, true),
+                new EmptyBorder(6, 14, 6, 14)));
         return lbl;
     }
 
@@ -352,17 +376,22 @@ public class AdminDashboard extends JFrame implements ActionListener {
         else if (e.getSource() == issueBookButton) {
             setActive(issueBookButton);
             openPanel(new IssueBookFrame());
+        } // ── Return Book ──────────────────────
+        else if (e.getSource() == returnBookButton) {
+
+            setActive(returnBookButton);
+
+            openPanel(new ReturnBookFrame());
         }
 
         // ── Logout ───────────────────────────
         else if (e.getSource() == logoutButton) {
             int choice = JOptionPane.showConfirmDialog(
-                this,
-                "Are you sure you want to logout?",
-                "Logout Confirmation",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-            );
+                    this,
+                    "Are you sure you want to logout?",
+                    "Logout Confirmation",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
             if (choice == JOptionPane.YES_OPTION) {
                 dispose();
                 new LoginFrame();
@@ -381,8 +410,9 @@ public class AdminDashboard extends JFrame implements ActionListener {
 
         try {
             UIManager.setLookAndFeel(
-                UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignored) {}
+                    UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored) {
+        }
 
         SwingUtilities.invokeLater(AdminDashboard::new);
     }
